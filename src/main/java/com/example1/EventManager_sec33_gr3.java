@@ -1,19 +1,46 @@
 package com.example1;
-
+//Mustabir islam 1096561
+//Tarek firas 1090479
+//Fakhri Mohammed 1093231
 import java.time.LocalDateTime;
 import java.util.*;
 import java.time.format.DateTimeFormatter;
-/**
- *Controller class that manages all events using TreeMap
- * Handles collision strategy using ArrayList for events with identical start times (Option 2)
- */
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import java.io.FileReader;
+import java.io.IOException;
+
+//ARRAYLIST FOR COLLISION
+//ADDED REGION BASED TREE AND CATAGORY BASED TREE
 
 public class EventManager_sec33_gr3 {
 
     private TreeMap<LocalDateTime, ArrayList<Event_sec33_gr3>> eventSchedule;
 
+    //  Region-based TreeMaps  emirate-specific operations
+    private Map<String, TreeMap<LocalDateTime, ArrayList<Event_sec33_gr3>>> regionBasedTrees;
+
+    //  Category-based TreeMaps  category-specific operations
+    private Map<String, TreeMap<LocalDateTime, ArrayList<Event_sec33_gr3>>> categoryBasedTrees;
+
     public EventManager_sec33_gr3() {
         eventSchedule = new TreeMap<>();
+
+        // Initialize region-based trees for all UAE emirates
+        regionBasedTrees = new HashMap<>();
+        String[] emirates = {"Abu Dhabi", "Dubai", "Sharjah", "Ajman", "Umm Al Quwain",
+                            "Ras Al Khaimah", "Fujairah", "Al Ain"};
+        for (String emirate : emirates) {
+            regionBasedTrees.put(emirate, new TreeMap<>());
+        }
+
+        // Initialize category-based trees
+        categoryBasedTrees = new HashMap<>();
+        String[] categories = {"Cultural", "Educational", "Charity"};
+        for (String category : categories) {
+            categoryBasedTrees.put(category, new TreeMap<>());
+        }
     }
 
     public void addEvent(Event_sec33_gr3 event) throws InvalidEventException_sec33_gr3{
@@ -22,6 +49,7 @@ public class EventManager_sec33_gr3 {
 
         LocalDateTime startTime = event.getStartTime();
 
+        // Add to main schedule
         if(eventSchedule.containsKey(startTime)){
             eventSchedule.get(startTime).add(event);
             System.out.println("✓ Event added successfully (same time slot)!");
@@ -249,7 +277,7 @@ public class EventManager_sec33_gr3 {
 
 //
      // Helper method to display statistics for any tree (region or category)
-
+//("Dubai", 5), ("Sharjah", 2)
     private void displayStatistics(Map<String, TreeMap<LocalDateTime, ArrayList<Event_sec33_gr3>>> trees,
                                    String header, String label, boolean sortByCount) {
         System.out.println("\n╔══════════════════════════════════════════════════════════╗");
@@ -268,7 +296,7 @@ public class EventManager_sec33_gr3 {
         }
 
         if (sortByCount) {
-            entries.sort((a, b) -> b.getValue().compareTo(a.getValue()));
+            entries.sort((a, b) -> b.getValue().compareTo(a.getValue())); //efficiency O(nlogn)
         }
 
         for (Map.Entry<String, Integer> entry : entries) {
@@ -276,6 +304,9 @@ public class EventManager_sec33_gr3 {
             System.out.printf("  %-20s: %3d %s%n", entry.getKey(), entry.getValue(), bar);
         }
     }
+
+
+
 
     public boolean removeEvent(String title) {
         // 1. Create an iterator to safely loop through the map
@@ -305,6 +336,7 @@ public class EventManager_sec33_gr3 {
         System.out.println("Event not found.");
         return false;
     }
+
     public void removeOutdatedEvents() {
 
         LocalDateTime now = LocalDateTime.now();
@@ -346,6 +378,7 @@ public class EventManager_sec33_gr3 {
 
         return results;
     }
+
     public List<Event_sec33_gr3> searchEventsByCategory(String category) {
         List<Event_sec33_gr3> results = new ArrayList<>();
 
@@ -359,6 +392,7 @@ public class EventManager_sec33_gr3 {
 
         return results;
     }
+
     public List<Event_sec33_gr3> searchEventsByEmirate(String location) {
         List<Event_sec33_gr3> results = new ArrayList<>();
 
@@ -371,6 +405,7 @@ public class EventManager_sec33_gr3 {
         }
         return results;
     }
+
     public List<Event_sec33_gr3> searchEventsByLocation(String location) {
         List<Event_sec33_gr3> results = new ArrayList<>();
 
@@ -396,10 +431,10 @@ public class EventManager_sec33_gr3 {
         return false;
     }
 
-    /**
-     * Basic Operation 5: Display all events in chronological order
-     * Uses in-order traversal (TreeMap automatically maintains sorted order)
-     */
+
+     // Basic Operation 5: Display all events in chronological order
+     // Uses in-order traversal (TreeMap automatically maintains sorted order)
+
     public void displayAllEvents() {
         if (eventSchedule.isEmpty()) {
             System.out.println("\n═══════════════════════════════════════════════════════════");
@@ -458,9 +493,7 @@ public class EventManager_sec33_gr3 {
         // Show first event name if exists
         if (!events.isEmpty()) {
             System.out.print(" → " + events.get(0).getTitle());
-            if (events.size() > 1) {
-                System.out.print(" (+" + (events.size() - 1) + " more)");
-            }
+
         }
         System.out.println();
 
@@ -529,5 +562,5 @@ public class EventManager_sec33_gr3 {
         return eventSchedule.size();
     }
 
-}
 
+}

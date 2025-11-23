@@ -1,7 +1,9 @@
 package com.example1;
 
 import java.time.LocalDateTime;
-
+//Mustabir islam 1096561
+//Tarek firas 1090479
+//Fakhri Mohammed 1093231
 public class CulturalEvent_sec33_gr3 extends Event_sec33_gr3  {
 
     private String CulturalType; // Festival, Exhibition, Performance, Heritage

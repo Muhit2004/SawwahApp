@@ -5,9 +5,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
-
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+//Mustabir islam 1096561
+//Tarek firas 1090479
+//Fakhri Mohammed 1093231
 public class SawwahApp_sec33_gr3 {
     private static EventManager_sec33_gr3 eventManager = new EventManager_sec33_gr3();
 
@@ -48,7 +48,14 @@ public class SawwahApp_sec33_gr3 {
             System.out.println("  search       - Search for events");
             System.out.println("  display      - Display all events");
             System.out.println("  tree         - Display tree structure");
-            System.out.println("  stats        - Show system statistics");
+            System.out.println("");
+            System.out.println(" ADVANCED FEATURES (Large Dataset Management):");
+            System.out.println("  loadjson     - Load events from JSON file");
+            System.out.println("  regional     - Display events grouped by emirate");
+            System.out.println("  categories   - Display events grouped by category");
+            System.out.println("  regstats     - Show regional distribution statistics");
+            System.out.println("  catstats     - Show category distribution statistics");
+            System.out.println("");
             System.out.println("  exit         - Exit monitoring");
             System.out.println("─────────────────────────────────────────────────────────");
             System.out.print("\n💬 Enter command: ");
@@ -86,22 +93,34 @@ public class SawwahApp_sec33_gr3 {
                     case "tree":
                         eventManager.displayTreeStructure();
                         break;
-                    case "stats":
-                        displayStatistics();
+                    case "loadjson":
+                        handleLoadJSON(scanner);
+                        break;
+                    case "regional":
+                        eventManager.displayEventsByRegion();
+                        break;
+                    case "categories":
+                        eventManager.displayEventsByCategory();
+                        break;
+                    case "regstats":
+                        eventManager.displayRegionalStatistics();
+                        break;
+                    case "catstats":
+                        eventManager.displayCategoryStatistics();
                         break;
                     default:
-                        System.out.println("❌ Unknown command. Try again.");
+                        System.out.println(" Unknown command. Try again.");
                 }
             } catch (Exception e) {
-                System.err.println("❌ Error: " + e.getMessage());
+                System.err.println(" Error: " + e.getMessage());
             }
         }
         scanner.close();
     }
 
-    /**
-     * Handle adding a new event
-     */
+
+     //* Handle adding a new event
+
     private static void handleAddEvent(Scanner scanner) {
         System.out.println("\n╔══════════════════════════════════════════════════════════╗");
         System.out.println("║                   ADD NEW EVENT                          ║");
@@ -116,7 +135,6 @@ public class SawwahApp_sec33_gr3 {
 
             int eventType = Integer.parseInt(scanner.nextLine().trim());
 
-            // Common fields
             System.out.print("Event Title: ");
             String title = scanner.nextLine();
 
@@ -195,9 +213,9 @@ public class SawwahApp_sec33_gr3 {
         }
     }
 
-    /**
-     * Handle updating an existing event
-     */
+
+    // * Handle updating an existing event
+
     private static void handleUpdateEvent(Scanner scanner) {
         System.out.println("\n╔══════════════════════════════════════════════════════════╗");
         System.out.println("║                   UPDATE EVENT                           ║");
@@ -218,7 +236,6 @@ public class SawwahApp_sec33_gr3 {
 
             int eventType = Integer.parseInt(scanner.nextLine().trim());
 
-            // Common fields
             System.out.print("New Event Title: ");
             String title = scanner.nextLine();
 
@@ -301,9 +318,9 @@ public class SawwahApp_sec33_gr3 {
         }
     }
 
-    /**
-     * Handle removing an event
-     */
+
+   //  0 Handle removing an event
+
     private static void handleRemoveEvent(Scanner scanner) {
         System.out.println("\n╔══════════════════════════════════════════════════════════╗");
         System.out.println("║                   REMOVE EVENT                           ║");
@@ -319,18 +336,18 @@ public class SawwahApp_sec33_gr3 {
         }
     }
 
-    /**
-     * Handle cleaning up outdated events
-     */
+
+    //  Handle cleaning up outdated events
+
     private static void handleCleanupEvents() {
         System.out.println("\n🔄 Removing outdated events...");
         eventManager.removeOutdatedEvents();
         System.out.println("✅ Cleanup complete!");
     }
 
-    /**
-     * Handle searching for events
-     */
+
+    //  Handle searching for events
+
     private static void handleSearchEvents(Scanner scanner) {
         System.out.println("\n╔══════════════════════════════════════════════════════════╗");
         System.out.println("║                   SEARCH EVENTS                          ║");
@@ -398,26 +415,8 @@ public class SawwahApp_sec33_gr3 {
         }
     }
 
-    /**
-     * Display system statistics
-     */
-    private static void displayStatistics() {
-        System.out.println("\n╔══════════════════════════════════════════════════════════╗");
-        System.out.println("║                   SYSTEM STATISTICS                      ║");
-        System.out.println("╚══════════════════════════════════════════════════════════╝\n");
+    //  Load sample data for demonstration
 
-        System.out.println("📊 OVERALL STATISTICS:");
-        System.out.println("─────────────────────────────────────────────────────────");
-        System.out.println("📅 Total Time Slots: " + eventManager.getTotalTimeSlots());
-        System.out.println("🎫 Total Events: " + eventManager.getTotalEventCount());
-        System.out.println("⚠️  Events with Collisions: " + (eventManager.getTotalEventCount() - eventManager.getTotalTimeSlots()));
-        System.out.println("─────────────────────────────────────────────────────────");
-
-    }
-
-    /**
-     * Load sample data for demonstration
-     */
     private static void loadSampleData()  {
         try {
             System.out.println("╔══════════════════════════════════════════════════════════╗");
@@ -625,7 +624,6 @@ public class SawwahApp_sec33_gr3 {
                     "Understanding blockchain and cryptocurrency"
             ));
 
-            // Three events at the same time - 2025-12-10 16:00
             eventManager.addEvent(new EducationalEvent_sec33_gr3(
                     "Science Fair for Schools",
                     LocalDateTime.of(2025, 12, 10, 16, 0), // Same as Ajman Beach Festival
@@ -649,7 +647,7 @@ public class SawwahApp_sec33_gr3 {
                     "Families"
             ));
 
-            // ==================== MORE DIVERSE EVENTS ====================
+
 
             eventManager.addEvent(new CulturalEvent_sec33_gr3(
                     "Photography Exhibition",
@@ -775,5 +773,38 @@ public class SawwahApp_sec33_gr3 {
             System.out.println("✗ Error loading sample data: " + e.getMessage());
         }
     }
-}
 
+
+   //  ADVANCED FEATURE: Handle loading events from JSON file
+
+    private static void handleLoadJSON(Scanner scanner) {
+        System.out.println("\n╔══════════════════════════════════════════════════════════╗");
+        System.out.println("║          LOAD EVENTS FROM JSON (Large Dataset)          ║");
+        System.out.println("╚══════════════════════════════════════════════════════════╝\n");
+
+
+
+        try {
+
+            String filePath;
+
+
+                filePath = "events_large_dataset.json";
+
+
+            System.out.println("\n🔄 Loading events from: " + filePath);
+            int loadedCount = eventManager.loadEventsFromJSON(filePath);
+
+            if (loadedCount > 0) {
+                System.out.println("\n✅ Successfully loaded " + loadedCount + " events!");
+                System.out.println("💡 Use 'regional' or 'categories' commands to view organized data");
+                System.out.println("💡 Use 'regstats' or 'catstats' to see distribution analysis");
+            } else {
+                System.out.println("\n⚠️ No events were loaded. Check file path and format.");
+            }
+
+        } catch (Exception e) {
+            System.out.println("❌ Error: " + e.getMessage());
+        }
+    }
+}

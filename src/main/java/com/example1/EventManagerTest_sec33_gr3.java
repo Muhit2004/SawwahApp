@@ -1,5 +1,7 @@
 package com.example1;
-
+//Mustabir islam 1096561
+//Tarek firas 1090479
+//Fakhri Mohammed 1093231
 import org.junit.jupiter.api.*;
 
 import java.io.ByteArrayOutputStream;
@@ -9,10 +11,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Comprehensive test suite for EventManager_sec33_gr3
- * Tests all basic operations and edge cases as required by the assignment
- */
+
+ //Comprehensive test suite for EventManager_sec33_gr3
+ //Tests all basic operations and edge cases as required by the assignment
+
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class EventManagerTest_sec33_gr3 {
 
