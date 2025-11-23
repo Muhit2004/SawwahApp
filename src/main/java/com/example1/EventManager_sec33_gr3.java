@@ -32,6 +32,249 @@ public class EventManager_sec33_gr3 {
             System.out.println("✓ Event added successfully!");
         }
 
+        addToRegionTree(event);
+
+        addToCategoryTree(event);
+    }
+
+
+    //  ADVANCED FEATURE: Add event to region-specific tree
+
+    private void addToRegionTree(Event_sec33_gr3 event) throws InvalidEventException_sec33_gr3{
+        validateEvent(event);
+        String emirate = event.getEmirate();
+        TreeMap<LocalDateTime, ArrayList<Event_sec33_gr3>> regionTree = regionBasedTrees.get(emirate);
+
+        if (regionTree == null) {
+            regionTree = new TreeMap<>();
+            regionBasedTrees.put(emirate, regionTree);
+        }
+
+        LocalDateTime startTime = event.getStartTime();
+        if (regionTree.containsKey(startTime)) {
+            regionTree.get(startTime).add(event);
+        } else {
+            ArrayList<Event_sec33_gr3> eventList = new ArrayList<>();
+            eventList.add(event);
+            regionTree.put(startTime, eventList);
+        }
+    }
+
+    //ADVANCED FEATURE: Add event to category-specific tree
+
+    private void addToCategoryTree(Event_sec33_gr3 event) throws InvalidEventException_sec33_gr3 {
+        validateEvent(event);
+        String category = event.getCategory();
+        TreeMap<LocalDateTime, ArrayList<Event_sec33_gr3>> categoryTree = categoryBasedTrees.get(category);
+
+        if (categoryTree == null) {
+            categoryTree = new TreeMap<>();
+            categoryBasedTrees.put(category, categoryTree);
+        }
+
+        LocalDateTime startTime = event.getStartTime();
+        if (categoryTree.containsKey(startTime)) {
+            categoryTree.get(startTime).add(event);
+        } else {
+            ArrayList<Event_sec33_gr3> eventList = new ArrayList<>();
+            eventList.add(event);
+            categoryTree.put(startTime, eventList);
+        }
+    }
+
+
+     // ADVANCED FEATURE: Load events from JSON file
+     // Efficiently handles large datasets with automatic categorization
+
+    public int loadEventsFromJSON(String filePath) {
+        int loadedCount = 0;
+
+        try (FileReader reader = new FileReader(filePath)) {
+            Gson gson = new Gson();
+            JsonArray jsonArray = gson.fromJson(reader, JsonArray.class);
+
+            System.out.println("\n📂 Loading events from JSON file: " + filePath);
+            System.out.println("═══════════════════════════════════════════════════════════");
+
+            for (int i = 0; i < jsonArray.size(); i++) {
+                try {
+                    JsonObject jsonEvent = jsonArray.get(i).getAsJsonObject();
+                    Event_sec33_gr3 event = parseJsonEvent(jsonEvent);
+
+                    if (event != null) {
+                        addEvent(event);
+                        loadedCount++;
+                    }
+                } catch (Exception e) {
+                    System.err.println("⚠️ Warning: Skipped event " + (i + 1) + " - " + e.getMessage());
+                }
+            }
+
+            System.out.println("═══════════════════════════════════════════════════════════");
+            System.out.println("✓ Successfully loaded " + loadedCount + " events from JSON!");
+            System.out.println("✓ Events distributed across " + regionBasedTrees.size() + " regional trees");
+            System.out.println("✓ Events organized into " + categoryBasedTrees.size() + " category trees");
+
+        } catch (IOException e) {
+            System.err.println("❌ Error loading JSON file: " + e.getMessage());
+        }
+
+        return loadedCount;
+    }
+
+
+     // Parse JSON object to Event based on event type
+
+    private Event_sec33_gr3 parseJsonEvent(JsonObject json) throws InvalidEventException_sec33_gr3 {
+        String title = json.get("title").getAsString();
+        LocalDateTime startTime = LocalDateTime.parse(json.get("startTime").getAsString());
+        LocalDateTime endTime = LocalDateTime.parse(json.get("endTime").getAsString());
+        String location = json.get("location").getAsString();
+        String category = json.get("category").getAsString();
+        String emirate = json.get("emirate").getAsString();
+        String description = json.get("description").getAsString();
+        String eventType = json.get("eventType").getAsString();
+
+        switch (eventType) {
+            case "Cultural":
+                String festivalType = json.has("festivalType") ? json.get("festivalType").getAsString() : "Festival";
+                boolean requiresRegistration = json.has("requiresRegistration") && json.get("requiresRegistration").getAsBoolean();
+                return new CulturalEvent_sec33_gr3(title, startTime, endTime, location, emirate,
+                                                   description, festivalType, requiresRegistration);
+
+            case "Educational":
+                String educationalType = json.has("EducationalType") ? json.get("EducationalType").getAsString() : "School" ;
+                String educationalLevel = json.has("educationalLevel") ? json.get("educationalLevel").getAsString() : "Primary";
+                return new EducationalEvent_sec33_gr3( title,  startTime,  endTime, location,  educationalType,
+                         educationalLevel,  emirate, description);
+
+            case "Charity":
+                String organizingBody = json.has("organizingBody") ? json.get("organizingBody").getAsString() : "N/A";
+                double targetAmount = json.has("targetAmount") ? json.get("targetAmount").getAsDouble() : 0.0;
+                String cause = json.has("cause") ? json.get("cause").getAsString() : "Community Support";
+                return new CharityEvent_sec33_gr3(title, startTime, endTime, location, emirate,
+                                                  description, organizingBody, targetAmount, cause);
+
+            default:
+                throw new InvalidEventException_sec33_gr3("Unknown event type: " + eventType);
+        }
+    }
+
+
+     // ADVANCED FEATURE: Get events for specific emirate using dedicated tree
+
+    public List<Event_sec33_gr3> getEventsByRegion(String emirate) {
+        List<Event_sec33_gr3> results = new ArrayList<>();
+        TreeMap<LocalDateTime, ArrayList<Event_sec33_gr3>> regionTree = regionBasedTrees.get(emirate);
+
+        if (regionTree != null) {
+            for (ArrayList<Event_sec33_gr3> events : regionTree.values()) {
+                results.addAll(events);
+            }
+        }
+
+        return results;
+    }
+
+
+     // ADVANCED FEATURE: Get events for specific category using dedicated tree
+
+    public List<Event_sec33_gr3> getEventsByCategory(String category) {
+        List<Event_sec33_gr3> results = new ArrayList<>();
+        TreeMap<LocalDateTime, ArrayList<Event_sec33_gr3>> categoryTree = categoryBasedTrees.get(category);
+
+        if (categoryTree != null) {
+            for (ArrayList<Event_sec33_gr3> events : categoryTree.values()) {
+                results.addAll(events);
+            }
+        }
+
+        return results;
+    }
+
+
+     // ADVANCED FEATURE: Display events grouped by region
+
+    public void displayEventsByRegion() {
+        displayGroupedEvents(regionBasedTrees, "EVENTS GROUPED BY EMIRATE (Regional Trees)", "🌍");
+    }
+
+
+     // ADVANCED FEATURE: Display events grouped by category
+
+    public void displayEventsByCategory() {
+        displayGroupedEvents(categoryBasedTrees, "EVENTS GROUPED BY CATEGORY (Category Trees)", "📋");
+    }
+
+
+     // ADVANCED FEATURE: Get statistics about regional distribution
+
+    public void displayRegionalStatistics() {
+        displayStatistics(regionBasedTrees, "REGIONAL EVENT DISTRIBUTION ANALYSIS", "Events per Emirate", true);
+    }
+
+
+     // ADVANCED FEATURE: Get statistics about category distribution
+
+    public void displayCategoryStatistics() {
+        displayStatistics(categoryBasedTrees, "CATEGORY EVENT DISTRIBUTION ANALYSIS", "Events per Category", false);
+    }
+
+
+     // Helper method to display events from any tree (region or category)
+
+    private void displayGroupedEvents(Map<String, TreeMap<LocalDateTime, ArrayList<Event_sec33_gr3>>> trees,
+                                      String header, String icon) {
+        System.out.println("\n╔══════════════════════════════════════════════════════════╗");
+        System.out.printf("║  %-56s║%n", header);
+        System.out.println("╚══════════════════════════════════════════════════════════╝\n");
+
+        for (Map.Entry<String, TreeMap<LocalDateTime, ArrayList<Event_sec33_gr3>>> entry : trees.entrySet()) {
+            TreeMap<LocalDateTime, ArrayList<Event_sec33_gr3>> tree = entry.getValue();
+            if (tree.isEmpty()) continue;
+
+            int eventCount = tree.values().stream().mapToInt(List::size).sum();
+            System.out.println("\n" + icon + " " + entry.getKey().toUpperCase() + " (" + eventCount + " events)");
+            System.out.println("─────────────────────────────────────────────────────────");
+
+            int count = 1;
+            for (ArrayList<Event_sec33_gr3> eventList : tree.values()) {
+                for (Event_sec33_gr3 event : eventList) {
+                    System.out.println("  [" + count++ + "] " + event.getTitle() +
+                        " - " + event.getStartTime().format(DateTimeFormatter.ofPattern("MMM dd, HH:mm")));
+                }
+            }
+        }
+    }
+
+//
+     // Helper method to display statistics for any tree (region or category)
+
+    private void displayStatistics(Map<String, TreeMap<LocalDateTime, ArrayList<Event_sec33_gr3>>> trees,
+                                   String header, String label, boolean sortByCount) {
+        System.out.println("\n╔══════════════════════════════════════════════════════════╗");
+        System.out.printf("║  %-56s║%n", header);
+        System.out.println("╚══════════════════════════════════════════════════════════╝\n");
+
+        System.out.println("📊 " + label + ":");
+        System.out.println("─────────────────────────────────────────────────────────");
+
+        List<Map.Entry<String, Integer>> entries = new ArrayList<>();
+        for (Map.Entry<String, TreeMap<LocalDateTime, ArrayList<Event_sec33_gr3>>> entry : trees.entrySet()) {
+            int count = entry.getValue().values().stream().mapToInt(List::size).sum();
+            if (count > 0) {
+                entries.add(new AbstractMap.SimpleEntry<>(entry.getKey(), count));
+            }
+        }
+
+        if (sortByCount) {
+            entries.sort((a, b) -> b.getValue().compareTo(a.getValue()));
+        }
+
+        for (Map.Entry<String, Integer> entry : entries) {
+            String bar = "█".repeat(Math.min(entry.getValue(), 50));
+            System.out.printf("  %-20s: %3d %s%n", entry.getKey(), entry.getValue(), bar);
+        }
     }
 
     public boolean removeEvent(String title) {
